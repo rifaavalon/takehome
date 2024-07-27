@@ -1,0 +1,41 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Deploy to AWS Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v18
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: "your-application-name"
+        environment_name: "your-environment-name"
+        region: "us-west-2"
+        version_label: "v${{ github.run_number }}"
+        deployment_package: "path/to/your/deployment/package.zip"
