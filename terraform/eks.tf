@@ -19,7 +19,7 @@ module "eks" {
     }
   }
 
-  node_group_defaults = {
+  node_groups_defaults = {
     iam_role = aws_iam_role.eks_node_role.arn
   }
 }
