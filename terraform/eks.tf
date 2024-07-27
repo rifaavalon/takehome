@@ -3,7 +3,7 @@ module "eks" {
   version         = "~> 17.0"
 
   cluster_name    = "my-cluster"
-  cluster_version = "1.21" # Or any version you prefer
+  cluster_version = "1.30" # Or any version you prefer
 
   subnets         = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
   vpc_id           = aws_vpc.my_vpc.id
