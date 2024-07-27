@@ -1,41 +1,52 @@
-name: Build and Deploy
+name: Build, Test, and Deploy
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build
-        run: npm run build
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+        working-directory: backend
+      - name: Start application
+        run: npm start &
+        working-directory: backend
+      - name: Check application response
+        run: |
+          sleep 5 # Give the application some time to start
+          curl --fail http://localhost:3000/api || exit 1
         working-directory: backend
 
   deploy:
-    needs: build
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v1
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: "us-west-2"
-
       - name: Update kubeconfig
         run: |
           aws eks --region us-west-2 update-kubeconfig --name your-cluster-name
-
       - name: Deploy to Amazon EKS
         run: |
           kubectl apply -f path/to/your/kubernetes/deployment.yaml
