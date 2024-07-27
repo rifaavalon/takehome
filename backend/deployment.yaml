@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: takehome-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: takehome-app
+  template:
+    metadata:
+      labels:
+        app: takehome-app
+    spec:
+      containers:
+      - name: takehome-app
+        image: yourusername/takehome-app:latest
+        ports:
+        - containerPort: 3000

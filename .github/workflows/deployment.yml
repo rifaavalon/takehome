@@ -46,8 +46,12 @@ jobs:
           aws-region: "us-west-2"
       - name: Update kubeconfig
         run: |
-          aws eks --region us-west-2 update-kubeconfig --name your-cluster-name
-      - name: Deploy to Amazon EKS
+          aws eks --region us-west-2 update-kubeconfig --name takehome
+      - name: Deploy to AWS EKS
         run: |
-          kubectl apply -f path/to/your/kubernetes/deployment.yaml
-          kubectl apply -f path/to/your/kubernetes/service.yaml
+          kubectl apply -f frontend/deployment.yaml
+          kubectl apply -f frontend/service.yaml
+      - name: Deploy to Backend Service
+        run: |
+          kubectl apply -f backend/deployment.yaml
+          kubectl apply -f backend/service.yaml
