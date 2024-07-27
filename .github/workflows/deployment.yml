@@ -1,5 +1,4 @@
-name: Deploy to AWS
-
+name: Build and Deploy
 on:
   push:
     branches:
@@ -8,34 +7,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build
-      run: npm run build
+      - name: Build
+        run: npm run build
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Deploy to AWS Elastic Beanstalk
-      uses: einaregilsson/beanstalk-deploy@v18
-      with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: "your-application-name"
-        environment_name: "your-environment-name"
-        region: "us-west-2"
-        version_label: "v${{ github.run_number }}"
-        deployment_package: "path/to/your/deployment/package.zip"
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-west-2"
+
+      - name: Update kubeconfig
+        run: |
+          aws eks --region us-west-2 update-kubeconfig --name your-cluster-name
+
+      - name: Deploy to Amazon EKS
+        run: |
+          kubectl apply -f path/to/your/kubernetes/deployment.yaml
+          kubectl apply -f path/to/your/kubernetes/service.yaml
