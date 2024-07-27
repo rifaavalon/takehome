@@ -47,6 +47,20 @@ jobs:
       - name: Update kubeconfig
         run: |
           aws eks --region us-west-2 update-kubeconfig --name takehome
+      # Terraform Setup
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0 # Specify your Terraform version here
+      # Terraform Init
+      - name: Terraform Init
+        run: terraform init
+      # Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+      # Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
       - name: Deploy to AWS EKS
         run: |
           kubectl apply -f frontend/deployment.yaml
