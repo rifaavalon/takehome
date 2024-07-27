@@ -2,7 +2,7 @@ module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "~> 17.0"
 
-  cluster_name    = "my-cluster"
+  cluster_name    = "takehome"
   cluster_version = "1.30" # Or any version you prefer
 
   subnets         = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
