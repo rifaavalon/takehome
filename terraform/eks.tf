@@ -14,10 +14,9 @@ provider "kubernetes" {
   token                  = module.eks.aws_eks_cluster_auth.cluster.token
 }
 
-data "aws_eks_cluster" "cluster" {
+data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
-
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
