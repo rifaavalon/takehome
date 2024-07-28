@@ -1,3 +1,8 @@
+resource "aws_key_pair" "my_key" {
+  key_name   = "my-key"
+  public_key = file("${path.module}/my-key.pem.pub")
+}
+
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "~> 17.0"
@@ -15,7 +20,7 @@ module "eks" {
       min_capacity     = 1
 
       instance_type = "t3.medium"
-      key_name       = "my-key" # Replace with your key pair name
+      key_name       = aws_key_pair.my_key.key_name
     }
   }
 
