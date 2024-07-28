@@ -67,54 +67,33 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 }
 
+# Define the ECR repository
 resource "aws_ecr_repository" "takehome_repo" {
   name                 = "takehome_repo"  # Replace with your desired repository name
   image_tag_mutability = "MUTABLE"
-  lifecycle_policy {
-    policy = jsonencode({
-      rules = [
-        {
-          rulePriority = 1
-          description  = "Expire images older than 30 days"
-          selection    = {
-            countType  = "sinceLastUsed"
-            countUnit  = "days"
-            countNumber = 30
-          }
-          action       = {
-            type = "expire"
-          }
-        }
-      ]
-    })
-  }
 
   tags = {
     Name = "takehome_repo"
   }
 }
 
-# Optional: Define an ECR repository policy (if needed)
-resource "aws_ecr_repository_policy" "repo_policy" {
+# Define the ECR lifecycle policy
+resource "aws_ecr_lifecycle_policy" "takehome_repo_policy" {
   repository = aws_ecr_repository.takehome_repo.name
-  policy     = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+
+  policy = jsonencode({
+    rules = [
       {
-        Sid    = "AllowPushPull"
-        Effect = "Allow"
-        Principal = {
-          AWS = "*"
+        rulePriority = 1
+        description  = "Expire images older than 30 days"
+        selection    = {
+          countType  = "sinceLastUsed"
+          countUnit  = "days"
+          countNumber = 30
         }
-        Action = [
-          "ecr:PutImage",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:BatchGetImage",
-          "ecr:ListImages"
-        ]
+        action       = {
+          type = "expire"
+        }
       }
     ]
   })
