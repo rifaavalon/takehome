@@ -59,11 +59,20 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 
   data = {
-    mapRoles = jsonencode([{
-      rolearn  = aws_iam_role.eks_node_role.arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups   = ["system:bootstrappers", "system:nodes"]
-    }])
+    mapRoles = jsonencode([
+      {
+        rolearn  = aws_iam_role.eks_node_role.arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups   = ["system:bootstrappers", "system:nodes"]
+      }
+    ])
+    mapUsers = jsonencode([
+      {
+        userarn  = "arn:aws:iam::010526279936:user/terraform"  # Replace with your IAM user ARN
+        username = "terraform"
+        groups   = ["system:masters"]  # Assign to system:masters group for admin access
+      }
+    ])
   }
 }
 
@@ -76,4 +85,3 @@ resource "aws_ecr_repository" "takehome_repo" {
     Name = "takehome_repo"
   }
 }
-
