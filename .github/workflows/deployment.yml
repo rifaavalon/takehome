@@ -52,7 +52,10 @@ jobs:
           terraform_version: 1.0.0 # Specify your Terraform version here
       # Terraform Init
       - name: Terraform Init
-        run: terraform init
+        run: terraform init \
+            -backend-config="bucket=takehome-backend" \
+            -backend-config="tfstate" \
+            -backend-config="region=us-west-2"
         working-directory: terraform
       # Terraform Plan
       - name: Terraform Plan

@@ -16,11 +16,23 @@ jobs:
         terraform_version: 1.0.0
 
     - name: Terraform Init
-      run: terraform init
+      run: terraform init \
+        -backend-config="bucket=takehome-backend" \
+        -backend-config="tfstate" \
+        -backend-config="region=us-west-2"
+    - name: Check Terraform State
+      id: check_state
+      run: |
+        if [ -z "$(terraform state list)" ]; then
+          echo "State is empty, skipping destroy."
+          echo "##[endgroup]"
+          exit 0
+        else
+          echo "State is not empty, proceeding with destroy."
+        fi
 
     - name: Terraform Destroy
+      if: steps.check_state.outcome == 'success'
       run: terraform destroy -auto-approve
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2' # Replace with your AWS region
