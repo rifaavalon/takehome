@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: takehome-app
-        image: yourusername/takehome-app:latest
+        image: takehome_repo/takehome-app:latest
         ports:
         - containerPort: 3000

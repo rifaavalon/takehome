@@ -68,35 +68,12 @@ resource "kubernetes_config_map" "aws_auth" {
 }
 
 # Define the ECR repository
-resource "aws_ecr_repository" "my_repository" {
-  name                 = "my-repo"  # Replace with your desired repository name
+resource "aws_ecr_repository" "takehome_repo" {
+  name                 = "takehome_repo"  # Replace with your desired repository name
   image_tag_mutability = "MUTABLE"
 
   tags = {
-    Name = "my-repo"
+    Name = "takehome_repo"
   }
-}
-
-# Define the ECR lifecycle policy
-resource "aws_ecr_lifecycle_policy" "my_repository_policy" {
-  repository = aws_ecr_repository.my_repository.name
-
-  policy = jsonencode({
-    rules = [
-      {
-        rulePriority = 1
-        description  = "Expire images older than 30 days"
-        selection    = {
-          tagStatus   = "any"  # or "untagged" based on your requirements
-          countType   = "sinceLastUsed"
-          countUnit   = "days"
-          countNumber = 30
-        }
-        action       = {
-          type = "expire"
-        }
-      }
-    ]
-  })
 }
 

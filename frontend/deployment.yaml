@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: <repository-url>/my-frontend-app:latest
+        image: takehome_repo/my-frontend-app:latest
         ports:
         - containerPort: 80
