@@ -8,6 +8,18 @@ terraform {
   }
 }
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 3.0"
+    }
+  }
+}
 
 provider "aws" {
   region = "us-west-2" # Change to your desired AWS region
