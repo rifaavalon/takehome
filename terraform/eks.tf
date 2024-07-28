@@ -11,16 +11,14 @@ resource "aws_key_pair" "my_key" {
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  token                  = module.eks.aws_eks_cluster_auth.cluster.token
 }
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
+
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "~> 17.0"
