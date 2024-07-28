@@ -50,6 +50,53 @@ to:
 
 Now I was getting Hello from Frontend with Hello World in a div below that. 
 
-## Github Actions 
 
-I wanted to deploy this in AWS because that is what I am most familiar with. 
+## Running Locally 
+
+Now that I got the two folders working correctly, I added in two dockerfiles in each folder. I then setup a docker-compose.yaml which can be run by doing: `docker-compose up --build`. 
+
+Once this is running you can access the two sites via:
+
+`http://localhost:3000/api`
+`http://localhost`
+
+I also added .env files, so when the time comes and deployments need to be done they can be added for the different environments. 
+
+This will have to be added to the `scripts` block in the package.json to start from development, test, prod, etc. Because there was no need for a database for this project I left them blank. 
+
+## Docker Swarm 
+
+To deploy with docker swarm simply build the images locally and or in a repo if you prefer to do this locally: 
+`docker build -t my-backend:latest ./backend` 
+`docker build -t my-frontend:latest ./frontend`
+
+or to a repo 
+
+`docker tag backend:latest <registry>/backend:latest`
+`docker tag backend:latest <registry>/frontend:latest`
+
+then if going to a repo: 
+
+`docker push <registry>/backend:latest`
+`docker push <registry>/frontend:latest`
+
+
+If running locally: 
+`docker swarm init` 
+`docker stack deploy -c docker-swarm.yml`
+to terminate the swarm: 
+`docker swarm leave --force` 
+
+## Github Actions, EKS, Terraform
+
+I was setting up github actions to run this in EKS, but I did run out of time. As you can see I had the beginnings of something really neat, but because I couldn't get my auth files working correctly, but I figured that I would show some what of a kubernetes example as well. 
+
+## Thoughts, musings conclusion 
+
+I really liked this project, and I probably spent a lot more time on it than I needed to, but thank you it was a lot of fun! Few things I did think about with this project: 
+* Lambda deployment for api could've been another option for the express side of things, but this might need a bit of a rewrite to get that working. 
+* Could deploy the frontend in s3. 
+* I liked the little tricks and caveats on this
+* I probably could've put a database behind this, but I was only supposed to spend an hour 
+* I didn't do the `scripts` block with the different ways to start test, prod, dev, etc, I probably could've done that but I didn't, maybe I will futz around with this more 
+* I want to get the kubernetes stuff working, so I might just work on this outside of the time that I was alotted. 
